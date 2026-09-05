@@ -1,6 +1,6 @@
 {
   "name": "@robyrew/web-config",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Shared Astro/TypeScript/Tailwind configuration for the RobyRew sites",
   "license": "Apache-2.0",
   "type": "module",
@@ -19,7 +19,7 @@
     "./tsconfig/base.json": "./tsconfig/base.json"
   },
   "dependencies": {
-    "@robyrew/ui": "github:RobyRew/ui#v0.3.1"
+    "@robyrew/ui": "github:RobyRew/ui#v0.3.2"
   },
   "peerDependencies": {
     "astro": ">=5",
