@@ -69,6 +69,12 @@ thing in every app and follow both the theme and the accent.
 It also defines `.glass-float` (the sticky shell a glass bar sits in) and the
 `dark:` variant, which keys off `data-theme` rather than a media query.
 
+The `@robyrew/ui` sheets are imported into Tailwind's `components` layer, so a
+Tailwind utility always beats a `.rw-` class — `fixed` on a `.rw-glass` element
+wins over the `position: relative` that class needs for its rim. It also means
+an app overrides a token by declaring it in its own `:root`; no specificity
+gymnastics against `:root[data-theme="light"]`.
+
 ## No-flash theme stamp
 
 `theme.css` and the `dark:` variant both read `data-theme` on `<html>`. Stamp it

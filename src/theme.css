@@ -14,8 +14,18 @@
  * this file only maps them into Tailwind's namespace.
  */
 
-@import '@robyrew/ui/tokens.css';
-@import '@robyrew/ui/controls.css';
+/* Imported INTO Tailwind's `components` layer, which matters twice:
+ *
+ *  - A Tailwind utility beats a component class. Without this, `.rw-glass`
+ *    (which sets `position: relative` so its rim pseudo-element has a
+ *    containing block) silently overrode a `fixed` or `absolute` utility on
+ *    the same element, because unlayered CSS outranks anything in a layer.
+ *  - An app's own unlayered `:root` block beats the package's themed blocks
+ *    regardless of specificity, so overriding --accent or --panel is just a
+ *    matter of declaring it, not of out-specifying :root[data-theme="light"].
+ */
+@import '@robyrew/ui/tokens.css' layer(components);
+@import '@robyrew/ui/controls.css' layer(components);
 
 @theme {
   /* Surfaces and ink. --panel/--ink/--hair are re-pointed by tokens.css per
