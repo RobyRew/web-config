@@ -1,0 +1,81 @@
+/* @robyrew/web-config — the house Tailwind 4 theme.
+ *
+ * ONE import wires an app into the design system:
+ *
+ *     @import 'tailwindcss';
+ *     @import '@robyrew/web-config/theme.css';
+ *
+ * It pulls in @robyrew/ui (the glass material and the Apple control set) and
+ * republishes those tokens as Tailwind theme values, so `bg-panel`,
+ * `text-ink-2`, `border-hair` and `rounded-card` mean the same thing in every
+ * app and follow the theme and the accent without any per-app wiring.
+ *
+ * The design tokens themselves live in @robyrew/ui. Nothing is redefined here;
+ * this file only maps them into Tailwind's namespace.
+ */
+
+@import '@robyrew/ui/tokens.css';
+@import '@robyrew/ui/controls.css';
+
+@theme {
+  /* Surfaces and ink. --panel/--ink/--hair are re-pointed by tokens.css per
+   * theme, so a utility built on them switches with the theme for free. */
+  --color-ground:   var(--ground);
+  --color-ground-2: var(--ground-2);
+  --color-panel:    var(--panel);
+  --color-hair:     var(--hair);
+  --color-hair-soft: var(--hair-soft);
+
+  --color-ink:   var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+
+  /* Ink ON glass is a separate ramp on purpose: what sits behind a blurred
+   * surface is not the page, so page ink is the wrong contrast there. */
+  --color-g-ink:      var(--g-ink);
+  --color-g-ink-dim:  var(--g-ink-dim);
+  --color-g-ink-mute: var(--g-ink-mute);
+
+  --color-accent:      var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger:      var(--rw-danger);
+
+  /* Radii match the control metrics, so a Tailwind class and a .rw- class
+   * round to the same value and nesting stays concentric. */
+  --radius-card: var(--rw-r-card);
+  --radius-ctl:  var(--rw-r-ctl);
+  --radius-chip: var(--rw-r-chip);
+
+  --shadow-e1: var(--rw-e1);
+  --shadow-e2: var(--rw-e2);
+  --shadow-e3: var(--rw-e3);
+
+  --ease-house: var(--rw-ease);
+
+  --font-sans: var(--g-font);
+  --font-mono: var(--g-mono);
+}
+
+/* The dark variant keys off the stamped attribute rather than a media query,
+ * because every app resolves "system" to a real light/dark stamp before paint
+ * (see the no-flash snippet in the README). One source of truth for the theme
+ * beats a media query and an attribute disagreeing at the edges. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Glass has to float over something to have anything to refract. This is the
+ * sticky shell the bar sits in; it does not paint, it only keeps page content
+ * from starting underneath the bar. */
+.glass-float {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: .75rem 1rem 0;
+}
+@media (min-width: 640px) {
+  .glass-float { padding: 1rem 1.5rem 0; }
+}
+
+@media print {
+  .rw-glass { box-shadow: none; backdrop-filter: none; }
+  .no-print { display: none !important; }
+}
