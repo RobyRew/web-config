@@ -19,7 +19,7 @@
     "./tsconfig/base.json": "./tsconfig/base.json"
   },
   "dependencies": {
-    "@robyrew/ui": "github:RobyRew/ui#v0.3.0"
+    "@robyrew/ui": "github:RobyRew/ui#v0.3.1"
   },
   "peerDependencies": {
     "astro": ">=5",
