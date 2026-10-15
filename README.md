@@ -91,3 +91,33 @@ It resolves the stored preference, falls back to `prefers-color-scheme`, and
 carries a stored `accent` across at the same time. One stamp is the single
 source of truth for the theme, so the stylesheet and the variant cannot
 disagree.
+
+## Security headers (Node-served apps)
+
+Apps that run an Astro server instead of the `static-web` image send the same
+header set from Node:
+
+```js
+// server.mjs — wraps the @astrojs/node handler
+import { securityHeaders } from '@robyrew/web-config/security-headers';
+
+const headers = securityHeaders();
+http.createServer((req, res) => {
+  for (const [k, v] of Object.entries(headers)) res.setHeader(k, v);
+  handler(req, res);
+});
+```
+
+It is plain JavaScript with no imports, so a bare-Node entry can load it from
+`node_modules`.
+
+The CSP is split with Astro. Turn on `security.csp` in `astro.config.mjs`, and
+Astro writes `script-src`/`style-src` into a `<meta>` tag on every page, with
+hashes for its inline island loader. The header carries only what a meta tag
+cannot (`frame-ancestors`) plus a few hardening directives, and leaves scripts
+and styles to the meta. Both policies are enforced, so the header must not
+restrict scripts. For an app without Astro's meta CSP, pass a full policy:
+`securityHeaders({ csp: "default-src 'self'; …" })`.
+
+`referrerPolicy` can be overridden per response. For example, use
+`no-referrer` on URLs that carry a secret.
