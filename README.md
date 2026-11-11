@@ -11,7 +11,7 @@ parts that were byte-identical across apps live here.
 ## Install
 
 ```
-npm i -D github:RobyRew/web-config#v0.1.0
+npm i -D github:RobyRew/web-config#v0.4.0
 ```
 
 `@robyrew/ui` comes with it, so an app does not depend on both.
@@ -66,14 +66,36 @@ and republishes their tokens as Tailwind theme values, so `bg-panel`,
 `text-ink-2`, `border-hair`, `rounded-card` and `shadow-e2` resolve to the same
 thing in every app and follow both the theme and the accent.
 
-It also defines `.glass-float` (the sticky shell a glass bar sits in) and the
-`dark:` variant, which keys off `data-theme` rather than a media query.
+Since 0.4.0 the theme also maps the status tones (`text-ok`, `text-warn`,
+`text-danger`), the text colour for accent fills (`text-on-accent`), the glass
+fills (`bg-g-fill`, `bg-g-fill-2`, …), the control fills (`bg-fill`, …), the
+glass radii (`rounded-glass-sm`, `rounded-glass`, `rounded-glass-lg`), the small
+and large control radii, and two more easings (`ease-spring`,
+`ease-house-out` — not `ease-out`, which stays Tailwind's own).
+
+It also defines `.glass-float` (the sticky shell a glass bar sits in, padded
+clear of the notch with `viewport-fit=cover`) and the `dark:` variant, which
+keys off `data-theme` rather than a media query. `data-theme` can sit on any
+element, so the variant stops at a `data-theme="light"` subtree inside a dark
+page. A page with a `.glass-float` shell also gets `--rw-toast-offset`, so
+`toast()` notices appear below the bar rather than over it. Add
+`.rw-scroll-edge` to the shell to fade content into the ground before it passes
+under the bar.
 
 The `@robyrew/ui` sheets are imported into Tailwind's `components` layer, so a
 Tailwind utility always beats a `.rw-` class — `fixed` on a `.rw-glass` element
 wins over the `position: relative` that class needs for its rim. It also means
 an app overrides a token by declaring it in its own `:root`; no specificity
-gymnastics against `:root[data-theme="light"]`.
+gymnastics against `[data-theme="light"]`.
+
+The glass formats' own sheets are not imported here: an Astro page gets each
+one with the component that uses it. A page that uses the classes without the
+Astro components — a React island, or `toast()` raised from script — adds them
+to the same layer:
+
+```css
+@import '@robyrew/ui/glass.css' layer(components);
+```
 
 ## No-flash theme stamp
 
@@ -87,10 +109,16 @@ import { themeBootstrap } from '@robyrew/web-config/theme-bootstrap';
 <script is:inline set:html={themeBootstrap} />
 ```
 
-It resolves the stored preference, falls back to `prefers-color-scheme`, and
+It resolves the stored preference (`localStorage.theme`: `light`, `dark`, or
+absent for "follow the system"), falls back to `prefers-color-scheme`, and
 carries a stored `accent` across at the same time. One stamp is the single
 source of truth for the theme, so the stylesheet and the variant cannot
-disagree.
+disagree. While no preference is stored it also follows an OS appearance change
+with the page open.
+
+The string itself lives in `@robyrew/ui/theme.js`, next to `setTheme()` and the
+other theme helpers; this export is kept so existing imports work. It changed in
+0.4.0, so a CSP that pins its hash needs the hash regenerated.
 
 ## Security headers (Node-served apps)
 

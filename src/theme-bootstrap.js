@@ -9,13 +9,12 @@
  *
  * Kept as a string because it must run before the bundle: a module import
  * would execute after the first paint, which is the flash it exists to avoid.
+ *
+ * The source lives in @robyrew/ui (theme.js), beside the tokens it stamps for
+ * and the setTheme() runtime that writes the same storage key. Since 0.4.0 the
+ * stamp accepts only "light" or "dark" from localStorage.theme (anything else
+ * means "follow the system") and keeps an unpinned page in step when the OS
+ * appearance changes while the page is open. The string changed, so any CSP
+ * hash pinned for it has to be regenerated.
  */
-export const themeBootstrap = `(function(){try{
-var s=localStorage.getItem('theme');
-var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
-document.documentElement.setAttribute('data-theme', s || (d?'dark':'light'));
-var a=localStorage.getItem('accent'); if(a) document.documentElement.setAttribute('data-accent',a);
-}catch(e){}finally{
-document.documentElement.classList.remove('theme-loading');
-document.documentElement.classList.add('js');
-}})();`;
+export { themeBootstrap } from '@robyrew/ui/theme.js';

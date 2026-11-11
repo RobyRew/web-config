@@ -5,10 +5,11 @@
  *     @import 'tailwindcss';
  *     @import '@robyrew/web-config/theme.css';
  *
- * It pulls in @robyrew/ui (the glass material and the Apple control set) and
- * republishes those tokens as Tailwind theme values, so `bg-panel`,
- * `text-ink-2`, `border-hair` and `rounded-card` mean the same thing in every
- * app and follow the theme and the accent without any per-app wiring.
+ * It pulls in @robyrew/ui (the tokens, the glass material and the Apple
+ * control set) and republishes those tokens as Tailwind theme values, so
+ * `bg-panel`, `text-ink-2`, `border-hair` and `rounded-card` mean the same
+ * thing in every app and follow the theme and the accent without any per-app
+ * wiring.
  *
  * The design tokens themselves live in @robyrew/ui. Nothing is redefined here;
  * this file only maps them into Tailwind's namespace.
@@ -22,45 +23,74 @@
  *    the same element, because unlayered CSS outranks anything in a layer.
  *  - An app's own unlayered `:root` block beats the package's themed blocks
  *    regardless of specificity, so overriding --accent or --panel is just a
- *    matter of declaring it, not of out-specifying :root[data-theme="light"].
+ *    matter of declaring it, not of out-specifying [data-theme="light"].
+ *
+ * The glass formats' own sheets are not imported here: an Astro page that
+ * renders a component gets that component's sheet with it. A page that uses
+ * the classes without the Astro components (a React island, toast() from
+ * script) adds them in the same layer:
+ *     @import '@robyrew/ui/glass.css' layer(components);
  */
 @import '@robyrew/ui/tokens.css' layer(components);
 @import '@robyrew/ui/controls.css' layer(components);
 
 @theme {
-  /* Surfaces and ink. --panel/--ink/--hair are re-pointed by tokens.css per
-   * theme, so a utility built on them switches with the theme for free. */
-  --color-ground:   var(--ground);
-  --color-ground-2: var(--ground-2);
-  --color-panel:    var(--panel);
-  --color-hair:     var(--hair);
+  /* Surfaces and ink. tokens.css re-points these per theme — and per
+   * data-theme subtree — so a utility built on them switches with the theme
+   * for free. */
+  --color-ground:    var(--ground);
+  --color-ground-2:  var(--ground-2);
+  --color-panel:     var(--panel);
+  --color-hair:      var(--hair);
   --color-hair-soft: var(--hair-soft);
 
   --color-ink:   var(--ink);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
 
-  /* Ink ON glass is a separate ramp on purpose: what sits behind a blurred
-   * surface is not the page, so page ink is the wrong contrast there. */
+  /* Ink and fills ON glass are a separate ramp on purpose: what sits behind a
+   * blurred surface is not the page, so page ink is the wrong contrast there. */
   --color-g-ink:      var(--g-ink);
   --color-g-ink-dim:  var(--g-ink-dim);
   --color-g-ink-mute: var(--g-ink-mute);
+  --color-g-fill:     var(--g-fill);
+  --color-g-fill-2:   var(--g-fill-2);
+  --color-g-fill-3:   var(--g-fill-3);
+  --color-g-hair:     var(--g-hair);
 
   --color-accent:      var(--accent);
   --color-accent-soft: var(--accent-soft);
-  --color-danger:      var(--rw-danger);
+  /* Text on an accent fill: dark in the dark theme, white in the light one. */
+  --color-on-accent:   var(--on-accent);
 
-  /* Radii match the control metrics, so a Tailwind class and a .rw- class
-   * round to the same value and nesting stays concentric. */
-  --radius-card: var(--rw-r-card);
-  --radius-ctl:  var(--rw-r-ctl);
-  --radius-chip: var(--rw-r-chip);
+  --color-ok:     var(--rw-ok);
+  --color-warn:   var(--rw-warn);
+  --color-danger: var(--rw-danger);
+
+  --color-fill:   var(--rw-fill);
+  --color-fill-2: var(--rw-fill-2);
+  --color-fill-3: var(--rw-fill-3);
+
+  /* Radii match the control and glass metrics, so a Tailwind class and a .rw-
+   * class round to the same value and nesting stays concentric. */
+  --radius-card:     var(--rw-r-card);
+  --radius-ctl:      var(--rw-r-ctl);
+  --radius-ctl-sm:   var(--rw-r-ctl-sm);
+  --radius-ctl-lg:   var(--rw-r-ctl-lg);
+  --radius-chip:     var(--rw-r-chip);
+  --radius-glass-sm: var(--rw-r-glass-sm);
+  --radius-glass:    var(--rw-r-glass);
+  --radius-glass-lg: var(--rw-r-glass-lg);
 
   --shadow-e1: var(--rw-e1);
   --shadow-e2: var(--rw-e2);
   --shadow-e3: var(--rw-e3);
 
-  --ease-house: var(--rw-ease);
+  /* ease-house-out, not ease-out: Tailwind ships its own ease-out, and
+   * redefining it would change every app's existing ease-out utility. */
+  --ease-house:     var(--rw-ease);
+  --ease-house-out: var(--rw-ease-out);
+  --ease-spring:    var(--rw-ease-spring);
 
   --font-sans: var(--g-font);
   --font-mono: var(--g-mono);
@@ -69,23 +99,47 @@
 /* The dark variant keys off the stamped attribute rather than a media query,
  * because every app resolves "system" to a real light/dark stamp before paint
  * (see the no-flash snippet in the README). One source of truth for the theme
- * beats a media query and an attribute disagreeing at the edges. */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+ * beats a media query and an attribute disagreeing at the edges.
+ *
+ * data-theme also works on a subtree, so the variant stops at a light subtree
+ * inside a dark one: `dark:` utilities inside <section data-theme="light"> on
+ * a dark page do not apply. (Only that one level of nesting is undone; a dark
+ * subtree inside that light one inside the dark page reads as light.) */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *):not(:where([data-theme='dark'] [data-theme='light'], [data-theme='dark'] [data-theme='light'] *)));
 
 /* Glass has to float over something to have anything to refract. This is the
  * sticky shell the bar sits in; it does not paint, it only keeps page content
- * from starting underneath the bar. */
+ * from starting underneath the bar. It clears the notch and the rounded
+ * corners in landscape (with viewport-fit=cover in the viewport meta). Add
+ * .rw-scroll-edge to it to fade content into the ground before it passes under
+ * the bar. */
 .glass-float {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: .75rem 1rem 0;
+  padding:
+    max(.75rem, env(safe-area-inset-top, 0px))
+    max(1rem, env(safe-area-inset-right, 0px))
+    0
+    max(1rem, env(safe-area-inset-left, 0px));
 }
 @media (min-width: 640px) {
-  .glass-float { padding: 1rem 1.5rem 0; }
+  .glass-float {
+    padding:
+      max(1rem, env(safe-area-inset-top, 0px))
+      max(1.5rem, env(safe-area-inset-right, 0px))
+      0
+      max(1.5rem, env(safe-area-inset-left, 0px));
+  }
 }
+/* toast() raises its notices below a sticky bar rather than over it. */
+:root:has(.glass-float) { --rw-toast-offset: calc(var(--rw-ctl-h) + 1.75rem); }
 
 @media print {
-  .rw-glass { box-shadow: none; backdrop-filter: none; }
+  .rw-glass,
+  .rw-surface { box-shadow: none; backdrop-filter: none; }
+  .rw-toaster,
+  .rw-hud--overlay,
+  .rw-scroll-edge::before { display: none !important; }
   .no-print { display: none !important; }
 }

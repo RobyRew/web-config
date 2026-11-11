@@ -1,6 +1,6 @@
 {
   "name": "@robyrew/web-config",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Shared Astro/TypeScript/Tailwind configuration for the RobyRew sites",
   "license": "Apache-2.0",
   "type": "module",
@@ -15,7 +15,10 @@
   "exports": {
     "./astro": "./src/astro.ts",
     "./theme.css": "./src/theme.css",
-    "./theme-bootstrap": "./src/theme-bootstrap.js",
+    "./theme-bootstrap": {
+      "types": "./src/theme-bootstrap.d.ts",
+      "default": "./src/theme-bootstrap.js"
+    },
     "./tsconfig/base.json": "./tsconfig/base.json",
     "./security-headers": {
       "types": "./src/security-headers.d.ts",
@@ -23,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@robyrew/ui": "github:RobyRew/ui#v0.3.3"
+    "@robyrew/ui": "github:RobyRew/ui#v0.4.0"
   },
   "peerDependencies": {
     "astro": ">=5",
