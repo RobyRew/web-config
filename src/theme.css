@@ -25,11 +25,15 @@
  *    regardless of specificity, so overriding --accent or --panel is just a
  *    matter of declaring it, not of out-specifying [data-theme="light"].
  *
- * The glass formats' own sheets are not imported here: an Astro page that
- * renders a component gets that component's sheet with it. A page that uses
- * the classes without the Astro components (a React island, toast() from
- * script) adds them in the same layer:
+ * The glass formats' and the app kit's own sheets are not imported here: an
+ * Astro page that renders a component gets that component's sheet with it. A
+ * page that uses the classes without the Astro components (a React island,
+ * toast() from script, a comment built after a post) adds them in the same
+ * layer:
  *     @import '@robyrew/ui/glass.css' layer(components);
+ *     @import '@robyrew/ui/kit.css' layer(components);
+ * The kit's content primitives (avatar, status dot, skeleton, table, callout,
+ * disclosure, page head, empty state) live in controls.css and come with it.
  */
 @import '@robyrew/ui/tokens.css' layer(components);
 @import '@robyrew/ui/controls.css' layer(components);
@@ -85,6 +89,8 @@
   --shadow-e1: var(--rw-e1);
   --shadow-e2: var(--rw-e2);
   --shadow-e3: var(--rw-e3);
+  /* Overlays: menus and popovers (ui 0.5). */
+  --shadow-e4: var(--rw-e4);
 
   /* ease-house-out, not ease-out: Tailwind ships its own ease-out, and
    * redefining it would change every app's existing ease-out utility. */
@@ -94,6 +100,8 @@
 
   --font-sans: var(--g-font);
   --font-mono: var(--g-mono);
+  /* Colour emoji, for reactions (ui 0.5). */
+  --font-emoji: var(--g-emoji);
 }
 
 /* The dark variant keys off the stamped attribute rather than a media query,
@@ -141,5 +149,17 @@
   .rw-toaster,
   .rw-hud--overlay,
   .rw-scroll-edge::before { display: none !important; }
+  /* The app kit: the header prints in place, without its menu and switch;
+   * the controls that only act on screen are left out. */
+  .rw-site-head { position: static; }
+  .rw-site-menu,
+  .rw-site-menu-btn,
+  .rw-site-theme,
+  dialog.rw-pop,
+  .rw-composer,
+  .rw-load-more,
+  .rw-copy__btn,
+  .rw-search__clear { display: none !important; }
+  .rw-skeleton { animation: none; }
   .no-print { display: none !important; }
 }

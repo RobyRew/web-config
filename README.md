@@ -11,7 +11,7 @@ parts that were byte-identical across apps live here.
 ## Install
 
 ```
-npm i -D github:RobyRew/web-config#v0.4.0
+npm i -D github:RobyRew/web-config#v0.5.0
 ```
 
 `@robyrew/ui` comes with it, so an app does not depend on both.
@@ -73,6 +73,13 @@ glass radii (`rounded-glass-sm`, `rounded-glass`, `rounded-glass-lg`), the small
 and large control radii, and two more easings (`ease-spring`,
 `ease-house-out` — not `ease-out`, which stays Tailwind's own).
 
+0.5.0 tracks `@robyrew/ui` 0.5, which adds the app kit (SiteHeader, Menu and
+Popover, filters, avatars, reactions and comments, download buttons, list
+states, an icon set). The theme maps its overlay shadow (`shadow-e4`) and the
+colour-emoji stack (`font-emoji`), and print hides the kit's screen-only
+controls (the header's menu and theme switch, open menus, the composer, load
+more, copy buttons) and prints the header in place.
+
 It also defines `.glass-float` (the sticky shell a glass bar sits in, padded
 clear of the notch with `viewport-fit=cover`) and the `dark:` variant, which
 keys off `data-theme` rather than a media query. `data-theme` can sit on any
@@ -88,14 +95,19 @@ wins over the `position: relative` that class needs for its rim. It also means
 an app overrides a token by declaring it in its own `:root`; no specificity
 gymnastics against `[data-theme="light"]`.
 
-The glass formats' own sheets are not imported here: an Astro page gets each
-one with the component that uses it. A page that uses the classes without the
-Astro components — a React island, or `toast()` raised from script — adds them
-to the same layer:
+The glass formats' and the app kit's own sheets are not imported here: an
+Astro page gets each one with the component that uses it. A page that uses the
+classes without the Astro components — a React island, `toast()` raised from
+script, a comment appended after a post — adds them to the same layer:
 
 ```css
 @import '@robyrew/ui/glass.css' layer(components);
+@import '@robyrew/ui/kit.css' layer(components);
 ```
+
+The kit's content primitives (avatar, status dot, skeleton, table, callout,
+disclosure, page head, empty state) are part of `controls.css`, so they come
+with this theme.
 
 ## No-flash theme stamp
 
